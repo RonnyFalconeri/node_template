@@ -29,12 +29,20 @@
             <td><label for="birthday">Birthday: </label></td>
             <td><input id="birthday" type="text"></td>
         </tr>
+        <tr>
+            <td colspan="2">
+                <input id="edit" type="button" value="Edit">
+                <input id="save" type="button" value="Save" style="display: none;">
+                <input id="delete" type="button" value="Delete" style="display: none;">
+            </td>
+        </tr>
     </table>
 
     <script>
         $(document).ready(function() {
 
             update_options();
+            disable_inputs(true);
 
             $("#button").click(function() {
 
@@ -56,6 +64,48 @@
                 
             });
 
+            $("#edit").click(function(){
+                disable_inputs(false);
+                $("#save").show();
+                $("#delete").show();
+
+            });
+
+            $("#save").click(function(){
+                disable_inputs(true);
+                
+                var id = $("#id").val();
+                var name = $("#name").val();
+                var surname = $("#surname").val();
+                var birthday = $("#birthday").val();
+
+                console.log("saving -> id: "+id+", name: "+name+", surname: "+surname+", birthday: "+birthday);
+
+                var stuff = {
+                    "id": id,
+                    "name": name,
+                    "surname": surname,
+                    "birthday": birthday
+                };
+
+                $.ajax({
+                    url: "/friends/save",
+                    type: "POST",
+                    dataType: 'json',
+                    data: stuff,
+                    success: function (data) {
+                        console.log("Freund/in erfolgreich gespeichert.");
+                    },
+                    error: function(xhr){
+                        console.log("Es ist ein Fehler aufgetreten :(");
+                    }
+                });
+                
+                $("#save").hide();
+                $("#delete").hide();
+
+            });
+
             function update_options(){
                 $.ajax({
                     url: "/friends",
@@ -65,7 +115,6 @@
                         var selector = document.getElementById("show_id");
 
                         data.forEach(element => {
-                            console.log(element.id);
                             var option = document.createElement("option");
                             option.text = element.id;
                             selector.add(option); 
@@ -77,35 +126,20 @@
                 }); 
             }
 
-
-            $("#add_option").click(function(){
-
-                var selector = document.getElementById("show_id");
-
-                $.post('/add_option',{request:'opt'}).done(function(data){
-                    var option1 = document.createElement("option");
-                    var option2 = document.createElement("option");
-                    var option3 = document.createElement("option");
-                    var option4 = document.createElement("option");
-                    var option5 = document.createElement("option");
-                    var option6 = document.createElement("option");
-
-                    option1.text = data.one;
-                    option2.text = data.two;
-                    option3.text = data.three;
-                    option4.text = data.four;
-                    option5.text = data.five;
-                    option6.text = data.six;
-
-                    selector.add(option1); 
-                    selector.add(option2); 
-                    selector.add(option3); 
-                    selector.add(option4); 
-                    selector.add(option5); 
-                    selector.add(option6); 
-                }); 
-
-            });
+            function disable_inputs(disable){
+                if(disable)
+                {
+                    $("#id").prop("disabled", true);
+                    $("#name").prop("disabled", true);
+                    $("#surname").prop("disabled", true);
+                    $("#birthday").prop("disabled", true);
+                }else
+                {
+                    $("#name").prop("disabled", false);
+                    $("#surname").prop("disabled", false);
+                    $("#birthday").prop("disabled", false);
+                }
+            }
 
         });
     </script>
