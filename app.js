@@ -61,6 +61,8 @@ function select_from(table, id){
     });
 }
 
+
+
 function count_rows(table){
     mysqlConnection.query("SELECT * FROM "+table , function (err, result, fields) {
         if (err) throw err;
