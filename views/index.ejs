@@ -8,24 +8,104 @@
 
     <hr>
 
-    <label for="id">ID: </label><input id="id" type="text"><br>
-    <label for="name">Name: </label><input id="name" type="text"><br>
-    <label for="surname">Surname: </label><input id="surname" type="text"><br>
-    <label for="birthday">Birthday: </label><input id="birthday" type="text"><br>
+    <label for="show_id">Show friend with following ID: </label>
+    <select id="show_id"></select>
+    <input id="button" type="button" value="Show"><br>
 
-    <input id="button" type="button" value="Click mich!">
+    <table>
+        <tr>
+            <td><label for="id">ID: </label></td>
+            <td><input id="id" type="text"></td>
+        </tr>
+        <tr>
+            <td><label for="name">Name: </label></td>
+            <td><input id="name" type="text"></td>
+        </tr>
+        <tr>
+            <td><label for="surname">Surname: </label></td>
+            <td><input id="surname" type="text"></td>
+        </tr>
+        <tr>
+            <td><label for="birthday">Birthday: </label></td>
+            <td><input id="birthday" type="text"></td>
+        </tr>
+    </table>
 
     <script>
         $(document).ready(function() {
-            
+
+            update_options();
+
             $("#button").click(function() {
-                $.post('/buttonclick',{request:'test'}).done(function(data){
-                    console.log({data:data});
-                    $("#name").val(data.name);
+
+                var friend_id = $("#show_id").val();
+                
+                $.ajax({
+                    url: "/friends/"+friend_id,
+                    type: "GET",
+                    success: function(data){
+                        $("#id").val(data[0].id);
+                        $("#name").val(data[0].vorname);
+                        $("#surname").val(data[0].name);
+                        $("#birthday").val(data[0].geburtstag);
+                    },
+                    error: function(xhr){
+                        console.log("Es ist ein Fehler aufgetreten :(");
+                    }
                 }); 
+                
             });
 
-            
+            function update_options(){
+                $.ajax({
+                    url: "/friends",
+                    type: "GET",
+                    success: function(data){
+                        
+                        var selector = document.getElementById("show_id");
+
+                        data.forEach(element => {
+                            console.log(element.id);
+                            var option = document.createElement("option");
+                            option.text = element.id;
+                            selector.add(option); 
+                        });
+                    },
+                    error: function(xhr){
+                        console.log("Es ist ein Fehler aufgetreten :(");
+                    }
+                }); 
+            }
+
+
+            $("#add_option").click(function(){
+
+                var selector = document.getElementById("show_id");
+
+                $.post('/add_option',{request:'opt'}).done(function(data){
+                    var option1 = document.createElement("option");
+                    var option2 = document.createElement("option");
+                    var option3 = document.createElement("option");
+                    var option4 = document.createElement("option");
+                    var option5 = document.createElement("option");
+                    var option6 = document.createElement("option");
+
+                    option1.text = data.one;
+                    option2.text = data.two;
+                    option3.text = data.three;
+                    option4.text = data.four;
+                    option5.text = data.five;
+                    option6.text = data.six;
+
+                    selector.add(option1); 
+                    selector.add(option2); 
+                    selector.add(option3); 
+                    selector.add(option4); 
+                    selector.add(option5); 
+                    selector.add(option6); 
+                }); 
+
+            });
 
         });
     </script>

@@ -33,18 +33,56 @@ app.listen(app.get("port"), function(){
 });
 
 
+
 // ajax event of button
 app.post("/buttonclick", async(req,res) => {
-    res.send({name:'Silan'});
-    console.log('buttonclick');
+    res.send(
+        {   
+            id: "1234",
+            name: "Doe",
+            vorname: "John",
+            geburtstag: "66.66.6666"
+        });
+    console.log("button was pressed.");
+});
+
+app.post("/add_option", async(req,res) => {
+    res.send(
+        {   
+            one: "11",
+            two: "22",
+            three: "33",
+            four: "44",
+            five: "55",
+            six: "66"
+        });
+    console.log("option button was pressed.");
 });
 
 
 
-//select_from("friends", "1");
-count_rows("friends");
+function myCallback(err, data){
+    if(err) throw err;
+    //console.log(data);
+    return data;
+}
 
-// astablish query to database
+// send friend on request
+app.get("/friends/:id", (req, res) =>{
+    mysqlConnection.query("SELECT * FROM friends WHERE id=?", [req.params.id], (err, rows, fields) =>{
+        if (err) throw err;
+        res.send(rows);
+    });
+});
+
+app.get("/friends", (req, res) =>{
+    mysqlConnection.query("SELECT * FROM friends", (err, rows, fields) =>{
+        if (err) throw err;
+        res.send(rows);
+    });
+});
+
+
 function select_from(table){
     mysqlConnection.query("SELECT * FROM "+table , function (err, result, fields) {
         if (err) throw err;
@@ -52,16 +90,12 @@ function select_from(table){
     });
 }
 
-function select_from(table, id){
+function select_from(table, id, callback){
     mysqlConnection.query("SELECT * FROM "+table+" WHERE id = "+id, (err, result, fields) => {
-        if(!err)
-            console.log(result);
-        else    
-            console.log(err);
+        if (err) throw err;
+        callback(err, result);
     });
 }
-
-
 
 function count_rows(table){
     mysqlConnection.query("SELECT * FROM "+table , function (err, result, fields) {
