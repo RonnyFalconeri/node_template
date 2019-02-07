@@ -6,5 +6,29 @@
        Simply test your database connection with this WebApp.
     </p>
 
+    <hr>
+
+    <label for="id">ID: </label><input id="id" type="text"><br>
+    <label for="name">Name: </label><input id="name" type="text"><br>
+    <label for="surname">Surname: </label><input id="surname" type="text"><br>
+    <label for="birthday">Birthday: </label><input id="birthday" type="text"><br>
+
+    <input id="button" type="button" value="Click mich!">
+
+    <script>
+        $(document).ready(function() {
+            
+            $("#button").click(function() {
+                $.post('/buttonclick',{request:'test'}).done(function(data){
+                    console.log({data:data});
+                    $("#name").val(data.name);
+                }); 
+            });
+
+            
+
+        });
+    </script>
+
     
 <% include _footer %>
