@@ -8,9 +8,9 @@
 
     <hr>
 
-    <label for="show_id">Show friend with following ID: </label>
-    <select id="show_id"></select>
-    <input id="button" type="button" value="Show"><br>
+    <label for="id_selector">Show friend with following ID: </label>
+    <select id="id_selector"></select>
+    <input id="show" type="button" value="Show"><br>
 
     <table>
         <tr>
@@ -32,6 +32,7 @@
         <tr>
             <td colspan="2">
                 <input id="edit" type="button" value="Edit">
+                <input id="cancel" type="button" value="Cancel" style="display: none;">
                 <input id="save" type="button" value="Save" style="display: none;">
                 <input id="delete" type="button" value="Delete" style="display: none;">
             </td>
@@ -44,9 +45,9 @@
             update_options();
             disable_inputs(true);
 
-            $("#button").click(function() {
+            $("#show").click(function() {
 
-                var friend_id = $("#show_id").val();
+                var friend_id = $("#id_selector").val();
                 
                 $.ajax({
                     url: "/friends/"+friend_id,
@@ -66,8 +67,11 @@
 
             $("#edit").click(function(){
                 disable_inputs(false);
+
+                $("#edit").hide();
                 $("#save").show();
                 $("#delete").show();
+                $("#cancel").show();
 
             });
 
@@ -78,8 +82,6 @@
                 var name = $("#name").val();
                 var surname = $("#surname").val();
                 var birthday = $("#birthday").val();
-
-                console.log("saving -> id: "+id+", name: "+name+", surname: "+surname+", birthday: "+birthday);
 
                 var stuff = {
                     "id": id,
@@ -102,8 +104,36 @@
                     }
                 });
                 
+                $("#edit").show();
                 $("#save").hide();
                 $("#delete").hide();
+                $("#cancel").hide();
+
+            });
+
+            $("#cancel").click(function(){
+                var friend_id = $("#id_selector").val();
+                
+                $.ajax({
+                    url: "/friends/"+friend_id,
+                    type: "GET",
+                    success: function(data){
+                        $("#id").val(data[0].id);
+                        $("#name").val(data[0].vorname);
+                        $("#surname").val(data[0].name);
+                        $("#birthday").val(data[0].geburtstag);
+                    },
+                    error: function(xhr){
+                        console.log("Es ist ein Fehler aufgetreten :(");
+                    }
+                }); 
+
+                disable_inputs(true);
+
+                $("#edit").show();
+                $("#save").hide();
+                $("#delete").hide();
+                $("#cancel").hide();
 
             });
 
@@ -127,7 +157,7 @@
                     type: "GET",
                     success: function(data){
                         
-                        var selector = document.getElementById("show_id");
+                        var selector = document.getElementById("id_selector");
 
                         data.forEach(element => {
                             var option = document.createElement("option");
