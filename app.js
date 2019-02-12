@@ -58,6 +58,13 @@ app.post("/friends/save", (req, res) =>{
     });
 });
 
+// add new friend  INSERT INTO friends VALUES (?, ?, ?, ?)
+app.post("/friends/add", (req, res) =>{
+    mysqlConnection.query("INSERT INTO friends (id, name, vorname, geburtstag) VALUES (?, ?, ?, ?)", [req.body.Stuff.id, req.body.Stuff.name, req.body.Stuff.surname, req.body.Stuff.birthday], (err, rows, fields) =>{
+        if (err) throw err;
+    });
+});
+
 // return all friends
 app.get("/friends", (req, res) =>{
     mysqlConnection.query("SELECT * FROM friends", (err, rows, fields) =>{

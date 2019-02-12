@@ -9,8 +9,9 @@
     <hr>
 
     <label for="id_selector">Show friend with following ID: </label>
-    <select id="id_selector"></select>
-    <input id="show" type="button" value="Show"><br>
+    <select id="id_selector">
+        <option value="none"> </option>
+    </select>
 
     <table>
         <tr>
@@ -31,10 +32,12 @@
         </tr>
         <tr>
             <td colspan="2">
-                <input id="edit" type="button" value="Edit">
-                <input id="cancel" type="button" value="Cancel" style="display: none;">
-                <input id="save" type="button" value="Save" style="display: none;">
-                <input id="delete" type="button" value="Delete" style="display: none;">
+                <input id="edit" class="btn btn-primary" type="button" value="Edit" style="display: none;">
+                <input id="add" class="btn btn-primary" type="button" value="Add New">
+                <input id="cancel" class="btn btn-warning" type="button" value="Cancel" style="display: none;">
+                <input id="save" class="btn btn-success" type="button" value="Save" style="display: none;">
+                <input id="new_save" class="btn btn-success" type="button" value="Save" style="display: none;">
+                <input id="delete" class="btn btn-danger" type="button" value="Delete" style="display: none;">
             </td>
         </tr>
     </table>
@@ -44,26 +47,6 @@
 
             update_options();
             disable_inputs(true);
-
-            $("#show").click(function() {
-
-                var friend_id = $("#id_selector").val();
-                
-                $.ajax({
-                    url: "/friends/"+friend_id,
-                    type: "GET",
-                    success: function(data){
-                        $("#id").val(data[0].id);
-                        $("#name").val(data[0].vorname);
-                        $("#surname").val(data[0].name);
-                        $("#birthday").val(data[0].geburtstag);
-                    },
-                    error: function(xhr){
-                        console.log("Es ist ein Fehler aufgetreten :(");
-                    }
-                }); 
-                
-            });
 
             $("#edit").click(function(){
                 disable_inputs(false);
@@ -114,24 +97,35 @@
             $("#cancel").click(function(){
                 var friend_id = $("#id_selector").val();
                 
-                $.ajax({
-                    url: "/friends/"+friend_id,
-                    type: "GET",
-                    success: function(data){
-                        $("#id").val(data[0].id);
-                        $("#name").val(data[0].vorname);
-                        $("#surname").val(data[0].name);
-                        $("#birthday").val(data[0].geburtstag);
-                    },
-                    error: function(xhr){
-                        console.log("Es ist ein Fehler aufgetreten :(");
-                    }
-                }); 
-
+                if(friend_id === "none")
+                {
+                    // leave blanc
+                    $("#id").val("");
+                    $("#name").val("");
+                    $("#surname").val("");
+                    $("#birthday").val("");
+                }else
+                {
+                    $.ajax({
+                        url: "/friends/"+friend_id,
+                        type: "GET",
+                        success: function(data){
+                            $("#id").val(data[0].id);
+                            $("#name").val(data[0].vorname);
+                            $("#surname").val(data[0].name);
+                            $("#birthday").val(data[0].geburtstag);
+                        },
+                        error: function(xhr){
+                            console.log("Es ist ein Fehler aufgetreten :(");
+                        }
+                    }); 
+                }
+                
                 disable_inputs(true);
 
                 $("#edit").show();
                 $("#save").hide();
+                $("#new_save").hide();
                 $("#delete").hide();
                 $("#cancel").hide();
 
@@ -149,6 +143,105 @@
                         console.log("Es ist ein Fehler aufgetreten :(");
                     }
                 });
+
+                
+                // leave blanc
+                $("#id").val("");
+                $("#name").val("");
+                $("#surname").val("");
+                $("#birthday").val("");
+
+                disable_inputs(true);
+
+                $("#edit").show();
+                $("#save").hide();
+                $("#new_save").hide();
+                $("#delete").hide();
+                $("#cancel").hide();
+
+            });
+
+            $("#add").click(function(){
+                disable_inputs(false);
+                $("#id").prop("disabled", false);
+
+                $("#id").val("");
+                $("#name").val("");
+                $("#surname").val("");
+                $("#birthday").val("");
+
+                $("#edit").hide();
+                $("#add").hide();
+                $("#cancel").show();
+                $("#new_save").show();
+            });
+
+            $("#new_save").click(function(){
+                disable_inputs(true);
+                
+                var id = $("#id").val();
+                var name = $("#name").val();
+                var surname = $("#surname").val();
+                var birthday = $("#birthday").val();
+
+                var stuff = {
+                    "id": id,
+                    "name": name,
+                    "surname": surname,
+                    "birthday": birthday
+                };
+
+                $.ajax({
+                    url: "/friends/add",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify({Stuff: stuff}),
+                    success: function (data) {
+                        console.log("Freund/in erfolgreich hinzugefügt.");
+                    },
+                    error: function(xhr){
+                        console.log("Es ist ein Fehler aufgetreten :(");
+                    }
+                });
+                
+                $("#edit").show();
+                $("#save").hide();
+                $("#new_save").hide();
+                $("#delete").hide();
+                $("#cancel").hide();
+            });
+
+            $("#id_selector").change(function(){
+                var friend_id = $("#id_selector").val();
+                
+                if(friend_id === "none")
+                {
+                    // leave blanc
+                    $("#id").val("");
+                    $("#name").val("");
+                    $("#surname").val("");
+                    $("#birthday").val("");
+                    $("#edit").hide();
+                }else
+                {
+                    $.ajax({
+                        url: "/friends/"+friend_id,
+                        type: "GET",
+                        success: function(data){
+                            $("#id").val(data[0].id);
+                            $("#name").val(data[0].vorname);
+                            $("#surname").val(data[0].name);
+                            $("#birthday").val(data[0].geburtstag);
+                        },
+                        error: function(xhr){
+                            console.log("Es ist ein Fehler aufgetreten :(");
+                        }
+                    });
+
+                    $("#edit").show();
+                } 
+
             });
 
             function update_options(){
