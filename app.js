@@ -65,20 +65,16 @@ app.get("/friends/:id", (req, res) =>{
     });
 });
 
-app.delete("/friends/delete/:id", (req, res) =>{
-    mysqlConnection.query("DELETE FROM friends WHERE id=?", [req.params.id], (err, rows, fields) =>{
+app.post("/friends/delete/:id", (req, res) =>{
+    mysqlConnection.query("DELETE FROM friends WHERE id = ?", [req.params.id], (err, rows, fields) =>{
         if (err) throw err;
         res.send(rows);
     });
 });
 
-// not finished yet
 app.post("/friends/save", (req, res) =>{
-    post_body = req.body.name;
-    console.log(post_body);
-    mysqlConnection.query("UPDATE friends SET vorname = ?, name = ?, geburtstag = ? WHERE id = ?", [req.params.id], (err, rows, fields) =>{
+    mysqlConnection.query("UPDATE friends SET vorname = ?, name = ?, geburtstag = ? WHERE id = ?", [req.body.Stuff.name, req.body.Stuff.surname, req.body.Stuff.birthday, req.body.Stuff.id], (err, rows, fields) =>{
         if (err) throw err;
-        res.send(rows);
     });
 });
 

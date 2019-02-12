@@ -91,8 +91,9 @@
                 $.ajax({
                     url: "/friends/save",
                     type: "POST",
-                    dataType: 'json',
-                    data: stuff,
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify({Stuff: stuff}),
                     success: function (data) {
                         console.log("Freund/in erfolgreich gespeichert.");
                     },
@@ -104,6 +105,20 @@
                 $("#save").hide();
                 $("#delete").hide();
 
+            });
+
+            $("#delete").click(function(){
+                var id = $("#id").val();
+                $.ajax({
+                    url: "/friends/delete/"+id,
+                    type: "POST",
+                    success: function (data) {
+                        console.log("Freund/in erfolgreich gelöscht.");
+                    },
+                    error: function(xhr){
+                        console.log("Es ist ein Fehler aufgetreten :(");
+                    }
+                });
             });
 
             function update_options(){
