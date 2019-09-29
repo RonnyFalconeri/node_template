@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ParallelJs</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Parallele ausführung zweier Funktionen</h1>
+    <hr>
+
+    <h2>Counter: <span id="clock"></span></h2>
+    <br>
+    <br>
+    <input id="button" type="button" value="change color">
+
+    <script>
+        $(document).ready(function()
+        {
+           
+            $("#button").click(function()
+            {
+
+                var colorR = Math.floor((Math.random() * 256));
+                var colorG = Math.floor((Math.random() * 256));
+                var colorB = Math.floor((Math.random() * 256));
+                $("body").css("background-color", "rgb(" + colorR + "," + colorG + "," + colorB + ")");
+               
+            });
+
+            var myInterval = window.setInterval(incremento, 500);
+
+            var counter = 0;
+
+            function incremento()
+            {
+                counter ++;
+                $("#clock").text(counter);
+            }
+
+
+        });
+    
+    </script>
+
+</body>
+</html>
